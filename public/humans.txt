@@ -1,0 +1,15 @@
+# humanstxt.org/
+# The humans responsible & technology colophon
+
+# TEAM
+
+  Matt Owen -- Everything -- @THE_REAL_SKYNET
+
+# THANKS
+
+  Mom
+
+# TECHNOLOGY COLOPHON
+
+  HTML5, CSS3
+  Normalize.css, jQuery, Modernizr
