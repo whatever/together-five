@@ -1,5 +1,5 @@
 /**
- * mind is a razorbla.de
+ * Server
  */
 var express = require("express"),
     app = express(),
@@ -9,9 +9,6 @@ var express = require("express"),
     io = require("socket.io").listen(server),
     fs = require("fs")
     ;
-
-// Local files
-var secrets = require('./secrets.json');
 
 app.use(express.bodyParser());
 app.use('/public', express.static(__dirname + '/public'));
