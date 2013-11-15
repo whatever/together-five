@@ -131,10 +131,26 @@ I7II777777I??+?=7777$$$$$$$$$$$$$$$$777,77777777$7777777777I?~7777$$$$$$$$$$$$$$
           prev = pos;
           var a = .2 * dx/20 * Math.cos(dx/05);
           var b = .2 * Math.sin(dy/05);
-           svvim.set({ a : a, b : a*b, c : a * a * b, e : 0.7 });
+          svvim.set({ a : a, b : a*b, c : a * a * b, e : 0.7 });
         };
       })();
       $(window).mousemove(mouseListener);
+
+      var scrollListener = (function () {
+        var _top = undefined;
+        return function () {
+          var t = getElapsedSeconds();
+          var dy = $(window).scrollTop() - _top;
+
+
+          var a = .2 * dy/20 * Math.cos(dy/05);
+          var b = .2 * Math.sin(dy/05);
+          svvim.set({ a : a, b : a*b, c : a * a * b, e : 0.7 });
+
+          _top = $(window).scrollTop();
+        };
+      })();
+      $(window).scroll(scrollListener);
     </script>
     <!-- <img src="/public/BKGD.png"> -->
   </body>
