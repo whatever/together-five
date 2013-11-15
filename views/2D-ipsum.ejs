@@ -26,6 +26,7 @@ I7II777777I??+?=7777$$$$$$$$$$$$$$$$777,77777777$7777777777I?~7777$$$$$$$$$$$$$$
     <script src="/public/js/vendor/live.js"       ></script>
     <script src="/public/js/vendor/dat.gui.min.js"></script>
     <script src="/public/js/custom/Wave.js"       ></script>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
 
     <style>
       body, html {
@@ -35,8 +36,24 @@ I7II777777I??+?=7777$$$$$$$$$$$$$$$$777,77777777$7777777777I?~7777$$$$$$$$$$$$$$
         padding: 0;
       }
       body {
+        font-family: "Open Sans";
+        font-size: 14pt;
         background-color: black;
         color: white;
+        font-weight: 300;
+        letter-spacing: .1em;
+        line-height: 1.3em;
+      }
+      #content {
+        width: 90%;
+        margin: 0 10%;
+        opacity: .9;
+      }
+      #content section {
+        width: 50%;
+        margin: 0 auto;
+        background-color: rgba(0, 0, 0, .8);
+        padding: .2em .8em;
       }
       #container {
         margin: 0 auto;
@@ -46,6 +63,7 @@ I7II777777I??+?=7777$$$$$$$$$$$$$$$$777,77777777$7777777777I?~7777$$$$$$$$$$$$$$
         position: fixed;
         top: 10px;
         left: 10px;
+        z-index: -999;
       }
       #wavethanks {
         background-color: rgba(0, 0, 0, .2);
@@ -55,8 +73,7 @@ I7II777777I??+?=7777$$$$$$$$$$$$$$$$777,77777777$7777777777I?~7777$$$$$$$$$$$$$$
         background-color: white;
         background-color: black;
         position: relative;
-        height: 100%;
-        margin: 0 auto;
+        margindth: 500px;: 0 auto;
         /* opacity: .3; */
       }
       .overlay {
@@ -72,13 +89,24 @@ I7II777777I??+?=7777$$$$$$$$$$$$$$$$777,77777777$7777777777I?~7777$$$$$$$$$$$$$$
   </head>
   <body>
     <!-- Canvas -->
-    <br>
     <div id="container">
       <canvas width="500" height="500" id="pleasefeeldeepthanks">WebGL is unsupported.</canvas>
     </div>
-    <div>
-      Don't mind me.
-    </div>
+
+    <br><br>
+    <article id="content">
+      <section>
+        <p>To go places and do things that have never been done before – that’s what living is all about.</p>
+        <p>There can be no thought of finishing for ‘aiming for the stars.’ Both figuratively and literally, it is a task to occupy the generations. And no matter how much progress one makes, there is always the thrill of just beginning.</p>
+        <p>It suddenly struck me that that tiny pea, pretty and blue, was the Earth. I put up my thumb and shut one eye, and my thumb blotted out the planet Earth. I didn't feel like a giant. I felt very, very small.</p>
+        <p>The dreams of yesterday are the hopes of today and the reality of tomorrow.</p>
+        <p>Here men from the planet Earth first set foot upon the Moon. July 1969 AD. We came in peace for all mankind.</p>
+        <p>Problems look mighty small from 150 miles up.</p>
+        <p>I don't know what you could say about a day in which you have seen four beautiful sunsets.</p>
+        <p>It suddenly struck me that that tiny pea, pretty and blue, was the Earth. I put up my thumb and shut one eye, and my thumb blotted out the planet Earth. I didn't feel like a giant. I felt very, very small.</p>
+      </section>
+    </article>
+
     <script src="http://codeorigin.jquery.com/jquery-2.0.3.min.js"></script>
     <script type="text/javascript">
       var gl = undefined;

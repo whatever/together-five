@@ -22,18 +22,22 @@ I7II777777I??+?=7777$$$$$$$$$$$$$$$$777,77777777$7777777777I?~7777$$$$$$$$$$$$$$
 <html>
   <head>
     <title>Together Festival ___ art, technology, music</title>
-    <!-- Debugging, etc.  -->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
+    <!-- VENDOR JS -->
     <script src="/public/js/vendor/live.js"               type="text/javascript"></script>
     <script src="/public/js/vendor/dat.gui.min.js"        type="text/javascript"></script>
+    <script src="/public/js/vendor/glMatrix-0.9.5.min.js" type="text/javascript"></script>
+
+    <!-- CUSTOM JS -->
+    <script src="/public/js/custom/MaskedPlane.js"  type="text/javascript"></script>
+    <script src="/public/js/custom/TogetherLogo.js" type="text/javascript"></script>
+    <script src="/public/js/custom/Drawer.js"       type="text/javascript"></script>
+    <script src="/public/js/custom/Wave.js"         type="text/javascript"></script>
+    <script src="/public/js/custom/webgl.js"        type="text/javascript"></script>
+    <script src="/public/js/custom/app.js"          type="text/javascript"></script>
 
     <!-- CDN -->
-
-    <!-- Important to app -->
-    <script src="/public/js/vendor/glMatrix-0.9.5.min.js" ></script>
-    <script src="/public/js/custom/webgl.js"              ></script>
-    <script src="/public/js/custom/MaskedPlane.js"        ></script>
-    <script src="/public/js/custom/TogetherLogo.js"       ></script>
-    <script src="/public/js/custom/app.js"                ></script>
+    <script src="http://codeorigin.jquery.com/jquery-2.0.3.min.js" type="text/javascript"></script>
 
     <!-- Shader -->
     <script type="x-shader/x-vertex" id="vert-simple">
@@ -213,8 +217,30 @@ I7II777777I??+?=7777$$$$$$$$$$$$$$$$777,77777777$7777777777I?~7777$$$$$$$$$$$$$$
 
     <!--
           MAIN SCRIPT
+          ***********
     -->
 
+    <script type="text/javascript">
+      var gl = undefined;
+      var svvim = undefined;
+
+      function main() {
+        canvas = document.getElementById("pleasefeeldeepthanks");
+        gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+        svvim = app("pleasefeeldeepthanks");
+        // var wave = new Wave("wavethanks");
+        // wave.loop();
+        svvim.init();
+        svvim.loop();
+      }
+      var getElapsedSeconds = (function () {
+        var _startTime = + new Date();
+        return function () {
+          return (new Date() - _startTime) / 1000.;
+        };
+      })();
+      window.onload = main;
+    </script>
     <style>
       body, html {
         width: 100%;
@@ -222,7 +248,22 @@ I7II777777I??+?=7777$$$$$$$$$$$$$$$$777,77777777$7777777777I?~7777$$$$$$$$$$$$$$
         margin: 0;
       }
       body {
+        font-family: "Open Sans";
+        font-size: 14pt;
         background-color: black;
+        color: white;
+        font-weight: 300;
+        letter-spacing: .1em;
+        line-height: 1.3em;
+      }
+      #content {
+        width: 90%;
+        margin: 0 10%;
+        opacity: .3;
+      }
+      #content section {
+        width: 50%;
+        margin: 0 auto;
       }
       #container {
         margin: 0 auto;
@@ -235,7 +276,6 @@ I7II777777I??+?=7777$$$$$$$$$$$$$$$$777,77777777$7777777777I?~7777$$$$$$$$$$$$$$
       }
       #pleasefeeldeepthanks {
         background-color: black;
-        background-color: white;
         position: relative;
         height: 100%;
         margin: 0 auto;
@@ -255,24 +295,8 @@ I7II777777I??+?=7777$$$$$$$$$$$$$$$$777,77777777$7777777777I?~7777$$$$$$$$$$$$$$
     <!-- Canvas -->
     <div id="container">
       <canvas width="700" height="700" id="pleasefeeldeepthanks">WebGL is unsupported.</canvas>
+      <!-- <div class="overlay" style="height: 80%;"><img style="width: 50%;" src="together_logo_trans.png"></div> -->
     </div>
-    <script src="http://codeorigin.jquery.com/jquery-2.0.3.min.js"></script>
-    <script type="text/javascript">
-      var gl = undefined;
-      var context = undefined;
-      var svvim = undefined;
-
-      function main() {
-        canvas = document.getElementById("pleasefeeldeepthanks");
-        gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
-
-        svvim = app("pleasefeeldeepthanks");
-        svvim.init();
-        svvim.play();
-      }
-
-      window.onload = main;
-    </script>
     <script type="text/javascript">
       var mouseListener = (function () {
         var prev = { x : undefined, y : undefined };

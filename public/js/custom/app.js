@@ -1,33 +1,29 @@
 var app = function (_canvasId) {
-
-  // Your basics for a WebGL app
   var _canvas = document.getElementById(_canvasId);
   var _gl = _canvas.getContext("webgl") || _canvas.getContext("experimental-webgl"); 
 
-  // Event callbacks to trigger
-  var _eventCallbacks = {
-    error : undefined
-  };
-
   var _rotation = [ 0, 0, 0 ];
   var _momentum = [ 0, 0, 0 ];
-  var _planes = [
-    MaskedPlane([+0.0, -0.30, +0.0], [+4.0, +4.0, +4.0], { color : [1, 1, 1, .20], mask : "/public/img/-2_TRANS.png", pattern : "/public/img/-2_PATTERN.png" }),
-    MaskedPlane([+0.0, -0.15, +0.0], [+4.0, +4.0, +4.0], { color : [1, 1, 0, .20], mask : "/public/img/-1_TRANS.png", pattern : "/public/img/-1_PATTERN.png" }),
-    MaskedPlane([+0.0, -0.00, +0.0], [+4.0, +4.0, +4.0], { color : [1, 0, 1, .20], mask : "/public/img/+0_TRANS.png", pattern : "/public/img/+0_PATTERN.png" }),
-    MaskedPlane([+0.0, +0.15, +0.0], [+4.0, +4.0, +4.0], { color : [1, 1, 1, .20], mask : "/public/img/+1_TRANS.png", pattern : "/public/img/+1_PATTERN.png" }),
-    MaskedPlane([+0.0, +0.30, +0.0], [+4.0, +4.0, +4.0], { color : [0, 1, 1, .20], mask : "/public/img/+2_TRANS.png", pattern : "/public/img/+2_PATTERN.png" })
-  ];
 
+  // Planes
+  var _planes = [
+    MaskedPlane([0, -.30, 0], [4.0, 4.0, 4.0], { color : [1, 1, 1, .20], mask : "/public/img/-2_TRANS.png", pattern : "/public/img/-2_PATTERN.png" }),
+    MaskedPlane([0, -.15, 0], [4.0, 4.0, 4.0], { color : [1, 1, 0, .20], mask : "/public/img/-1_TRANS.png", pattern : "/public/img/-1_PATTERN.png" }),
+    MaskedPlane([0, -.00, 0], [4.0, 4.0, 4.0], { color : [1, 0, 1, .20], mask : "/public/img/+0_TRANS.png", pattern : "/public/img/+0_PATTERN.png" }),
+    MaskedPlane([0, +.15, 0], [4.0, 4.0, 4.0], { color : [1, 1, 1, .20], mask : "/public/img/+1_TRANS.png", pattern : "/public/img/+1_PATTERN.png" }),
+    MaskedPlane([0, +.30, 0], [4.0, 4.0, 4.0], { color : [0, 1, 1, .20], mask : "/public/img/+2_TRANS.png", pattern : "/public/img/+2_PATTERN.png" }),
+  ];
+  // Logo
   var _logo = new TogetherLogo(
-    [ +0.0, +0.55, +0.0 ],
-    [ +2.0, +0.00, +1.0 ],
+    [ 0, +.45, 0 ],
+    [ 2.0, 0.0, 1.0 ],
     { color : [ 0, 0, 0, 1. ] }
   );
 
   var _is = { running : true };
   var _isRunning = true;
 
+  // ...
   var _pressedKeys = {};
   
   var _controls = {
@@ -44,6 +40,9 @@ var app = function (_canvasId) {
     rotate : 0.2,
   };
 
+  // var _gui = new dat.GUI();
+  // _gui.add(_controls, "rotate", -Math.PI, Math.PI, .01);
+
   document.onkeyup = function (ev) {
     _pressedKeys[ev.keyCode] = false;
   }
@@ -59,106 +58,37 @@ var app = function (_canvasId) {
 
   // Return actual object
   return {
-    init : _init,
-    play : _play,
-    stop : _stop,
+    init : function () {
+      setup();
+      _gl.bindBuffer(_gl.ARRAY_BUFFER, null);
+    },
+    addMovement : function (dx, dy) {
+      if (isNaN(dx) && !isFinite(dx))
+        dx = 0.;
+      if (isNaN(dy) && !isFinite(dy))
+        dy = 0.;
 
-    // Events
-    error        : _error,
-    incompatible : _incompatible,
-    addMovement  : _addMovement
+      _momentum[0] -= _sign(dx) * Math.min(Math.sqrt(Math.abs(dx))/200, 10);
+      _momentum[2] -= _sign(dy) * Math.min(Math.sqrt(Math.abs(dy))/200, 10);
+
+      function _sign(x) { return x ? x < 0 ? -1 : 1 : 0; }
+    },
+    loop : loop,
+    print : function () {
+    }
   };
-
   /**
-   * Initialize webgl context.
-   * Set up all data objects, etc. related to this world.
+   * Begin looping animation
    * @return {undefined} undefined
    */
-  function _init () {
-    _setup();
-    _gl.bindBuffer(_gl.ARRAY_BUFFER, null);
-  }
-
-  /**
-   */
-  function _play () {
-    _isRunning = true;
-    _loop();
-  }
-
-  /**
-   * Play the App
-   * Begin playing the app. This begins a loop
-   * @return {undefined} undefined
-   */
-  function _loop () {
+  function loop () {
     if (_isRunning)
-      requestAnimationFrame(_loop);
-    try {
-      update();
-      draw();
-    }
-    catch (err) {
-    }
+      requestAnimationFrame(loop);
+    update();
+    draw();
   }
 
-  /**
-   * Stop the App
-   * Stop the update-draw cycle. The app will no longer receives updates.
-   * @param {undefined} undefined
-   * @return {undefined} undefined
-   */
-  function _stop () {
-    _isRunning = false;
-  }
-
-
-  /**
-   * Initialize webgl context.
-   * Set up all data objects, etc. related to this world.
-   * @return {undefined} undefined
-   */
-  function _addMovement (dx, dy) {
-    if (isNaN(dx) && !isFinite(dx))
-      dx = 0.;
-    if (isNaN(dy) && !isFinite(dy))
-      dy = 0.;
-    _momentum[0] -= _sign(dx) * Math.min(Math.sqrt(Math.abs(dx))/200, 10);
-    _momentum[2] -= _sign(dy) * Math.min(Math.sqrt(Math.abs(dy))/200, 10);
-    function _sign(x) { return x ? x < 0 ? -1 : 1 : 0; }
-  }
-
-  /**
-   * Set an Error Function Callback
-   * When app encounters an error during the draw or update phase, this function is thrown.
-   * @param {callback} callback Callback to execute upon an error.
-   * @return {undefined} Nothing. We're retuning nothing.
-   */
-  function _error (callback) {
-    if (typeof callback === "function")
-      _eventCallbacks.error = callback;
-    return _eventCallbacks.error;
-  }
-
-  /**
-   * Set a Callback Functino to Trigger When WebGL Isn't Supported
-   * Sets a function to fire when webgl is compatible in some capacity;
-   * @param {callback} callback Callback to execute upon an error.
-   * @return {undefined} Nothing. We're retuning nothing.
-   */
-  function _incompatible (callback) {
-    if (typeof callback === "function")
-      _eventCallbacks.incompatible = callback;
-    return _eventCallbacks.incompatible;
-  }
-
-  //
-  ////  SWAPPABLE FUNCTIONS... EDIT THESE
-  //
-  ////
-  //
-
-  function _setup() {
+  function setup() {
     _gl.viewport(0, 0, _canvas.width, _canvas.height);
     _gl.clearColor(0, 0, 0, 1);
     _gl.clearDepth(1.0);
@@ -167,6 +97,9 @@ var app = function (_canvasId) {
   }
 
   function update() {
+    updatePosition();
+    // _rotation[0] += _rotation[0]
+    // _rotation[2] += 1.1;
     _rotation[0] /= 1.025;
     _rotation[2] /= 1.025;
     _rotation[0] += _momentum[0];
@@ -182,6 +115,7 @@ var app = function (_canvasId) {
   function draw() {
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    var t = getElapsedSeconds() / 1.5;
     webgl.perspectiveMatrix({
       fieldOfView : 45,
       aspectRatio : 1,
@@ -213,7 +147,20 @@ var app = function (_canvasId) {
     _logo.draw(_maskProg);
   }
 
-  function throwError () {
-    
+  function updatePosition() {
+    if (_pressedKeys[72]) {
+    }
+    if (_pressedKeys[74]) {
+    }
+    if (_pressedKeys[75]) {
+    }
+    if (_pressedKeys[76]) {
+    }
+    if (_pressedKeys[87]) {
+      _controls.z_translate += .09;
+    }
+    if (_pressedKeys[83]) {
+      _controls.z_translate -= .09;
+    }
   }
 }

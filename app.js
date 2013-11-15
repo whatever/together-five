@@ -19,11 +19,31 @@ app.use('/public/img', express.static(__dirname + '/public/img'));
 app.use(express.favicon(__dirname + '/public/favicon.ico', { maxAge: 2592000000 }))
 
 app.get("/", function (req, resp) {
-  resp.render("index.ejs");
+  resp.render("2D.ejs");
 });
 
 app.get("/001", function (req, resp) {
-  resp.render("old-index.ejs");
+  resp.render("3D-ipsum.ejs");
+});
+
+app.get("/002", function (req, resp) {
+  resp.render("2D-ipsum.ejs");
+});
+
+app.get("/2D", function (req, resp) {
+  resp.render("2D.ejs");
+});
+
+app.get("/2D-ipsum", function (req, resp) {
+  resp.render("2D-ipsum.ejs");
+});
+
+app.get("/3D", function (req, resp) {
+  resp.render("3D.ejs");
+});
+
+app.get("/3D-ipsum", function (req, resp) {
+  resp.render("3D-ipsum.ejs");
 });
 
 app.get('/humans.txt', function (req, resp) {
