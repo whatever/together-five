@@ -20,7 +20,7 @@ var app = function (_canvasId) {
   ];
 
   var _logo = new TogetherLogo(
-    [ +0.0, +0.45, +0.0 ],
+    [ +0.0, +0.55, +0.0 ],
     [ +2.0, +0.00, +1.0 ],
     { color : [ 0, 0, 0, 1. ] }
   );

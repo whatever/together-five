@@ -158,9 +158,9 @@ var TogetherLogo = (function (_pos, _dim, _opts) {
   }
 
   function _draw(shader) {
-    // @@@
-    if (!_imgLoaded)
+    if (!_imgLoaded) {
       return;
+    }
 
     webgl.pushModelView();
     webgl.perspectiveMatrix({ fieldOfView : 45, aspectRatio : 1, nearPlane : .1, farPlane : 100 });

@@ -23,12 +23,8 @@ I7II777777I??+?=7777$$$$$$$$$$$$$$$$777,77777777$7777777777I?~7777$$$$$$$$$$$$$$
   <head>
     <title>Together Festival ___ art, technology, music</title>
     <!-- Debugging, etc.  -->
-    <script src="/public/js/vendor/live.js"               type="text/javascript"></script>
-    <script src="/public/js/vendor/dat.gui.min.js"        type="text/javascript"></script>
-
-    <!-- CDN -->
-
-    <!-- Important to app -->
+    <script src="/public/js/vendor/live.js"       ></script>
+    <script src="/public/js/vendor/dat.gui.min.js"></script>
     <script src="/public/js/custom/Wave.js"       ></script>
 
     <style>
@@ -40,23 +36,28 @@ I7II777777I??+?=7777$$$$$$$$$$$$$$$$777,77777777$7777777777I?~7777$$$$$$$$$$$$$$
       }
       body {
         background-color: black;
+        color: white;
       }
       #container {
         margin: 0 auto;
         padding: 0;
         width: 800px;
         height: 90%;
+        position: fixed;
+        top: 10px;
+        left: 10px;
       }
       #wavethanks {
         background-color: rgba(0, 0, 0, .2);
         padding: 10px;
       }
       #pleasefeeldeepthanks {
-        background-color: black;
         background-color: white;
+        background-color: black;
         position: relative;
         height: 100%;
         margin: 0 auto;
+        /* opacity: .3; */
       }
       .overlay {
         height: 100%;
@@ -73,8 +74,12 @@ I7II777777I??+?=7777$$$$$$$$$$$$$$$$777,77777777$7777777777I?~7777$$$$$$$$$$$$$$
     <!-- Canvas -->
     <br>
     <div id="container">
-      <canvas width="300" height="300" id="pleasefeeldeepthanks">WebGL is unsupported.</canvas>
+      <canvas width="500" height="500" id="pleasefeeldeepthanks">WebGL is unsupported.</canvas>
     </div>
+    <div>
+      Don't mind me.
+    </div>
+    <script src="http://codeorigin.jquery.com/jquery-2.0.3.min.js"></script>
     <script type="text/javascript">
       var gl = undefined;
       var context = undefined;
@@ -84,28 +89,25 @@ I7II777777I??+?=7777$$$$$$$$$$$$$$$$777,77777777$7777777777I?~7777$$$$$$$$$$$$$$
         canvas = document.getElementById("pleasefeeldeepthanks");
         svvim = Wave("pleasefeeldeepthanks");
         svvim.loop();
-
-        // gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
-        // svvim = app("pleasefeeldeepthanks");
-        // svvim.init();
-        // svvim.play();
       }
 
       window.onload = main;
-    </script>
-    <script type="text/javascript">
+
       var mouseListener = (function () {
         var prev = { x : undefined, y : undefined };
         return function (ev) {
+          var t = getElapsedSeconds();
           var pos = { x : ev.clientX, y : ev.clientY };
           var dx = pos.x - prev.x;
           var dy = pos.y - prev.y;
           prev = pos;
-          svvim.addMovement(dx, dy);
+          var a = .2 * dx/20 * Math.cos(dx/05);
+          var b = .2 * Math.sin(dy/05);
+           svvim.set({ a : a, b : a*b, c : a * a * b, e : 0.7 });
         };
       })();
-      // $(window).mousemove(mouseListener);
+      $(window).mousemove(mouseListener);
     </script>
-    <!-- <script src="http://codeorigin.jquery.com/jquery-2.0.3.min.js"></script> -->
+    <!-- <img src="/public/BKGD.png"> -->
   </body>
 </html>

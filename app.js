@@ -22,6 +22,10 @@ app.get("/", function (req, resp) {
   resp.render("index.ejs");
 });
 
+app.get("/001", function (req, resp) {
+  resp.render("old-index.ejs");
+});
+
 app.get('/humans.txt', function (req, resp) {
   fs.readFile("public/humans.txt", "utf-8", function (err, data) {
     resp.set('Content-Type', 'text/plain');
