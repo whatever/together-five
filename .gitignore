@@ -3,4 +3,3 @@ package.json
 secrets.json
 node_modules
 *.swp
-live.js

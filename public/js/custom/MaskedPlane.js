@@ -216,7 +216,6 @@ var MaskedPlane = (function (_pos, _dim, _opts) {
     gl.uniformMatrix3fv(uNMatrix, false, normalMatrix);
 
     // Lighting Vectors
-    var t = getElapsedSeconds();
     var lightDir = vec3.normalize([ 0, 0, 1 ]);
     gl.uniform3fv(uLightDir, lightDir);
     gl.uniform3f(uAmbientCol, .25, .25, .25);
