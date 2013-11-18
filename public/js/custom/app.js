@@ -1,22 +1,22 @@
-var app = function (_canvasId) {
-  var _canvas = document.getElementById(_canvasId);
-  var _gl = _canvas.getContext("webgl") || _canvas.getContext("experimental-webgl"); 
+'use strict';
 
-  var _rotation = [ 0, 0, 0 ];
-  var _momentum = [ 0, 0, 0 ];
+var app = function (_canvasId) {
+  var _canvas = document.getElementById(_canvasId), _gl = _canvas.getContext('webgl') || _canvas.getContext('experimental-webgl');
+
+  var _rotation = [ 0, 0, 0 ], _momentum = [ 0, 0, 0 ];
 
   // Planes
   var _planes = [
-    MaskedPlane([0, -.30, 0], [4.0, 4.0, 4.0], { color : [1, 1, 1, .20], mask : "/public/img/-2_TRANS.png", pattern : "/public/img/-2_PATTERN.png" }),
-    MaskedPlane([0, -.15, 0], [4.0, 4.0, 4.0], { color : [1, 1, 0, .20], mask : "/public/img/-1_TRANS.png", pattern : "/public/img/-1_PATTERN.png" }),
-    MaskedPlane([0, -.00, 0], [4.0, 4.0, 4.0], { color : [1, 0, 1, .20], mask : "/public/img/+0_TRANS.png", pattern : "/public/img/+0_PATTERN.png" }),
-    MaskedPlane([0, +.15, 0], [4.0, 4.0, 4.0], { color : [1, 1, 1, .20], mask : "/public/img/+1_TRANS.png", pattern : "/public/img/+1_PATTERN.png" }),
-    MaskedPlane([0, +.30, 0], [4.0, 4.0, 4.0], { color : [0, 1, 1, .20], mask : "/public/img/+2_TRANS.png", pattern : "/public/img/+2_PATTERN.png" }),
+    new MaskedPlane([0, -0.30, 0], [4.0, 4.0, 4.0], { color : [1, 1, 1, 0.20], mask : '/public/img/-2_TRANS.png', pattern : '/public/img/-2_PATTERN.png' }),
+    new MaskedPlane([0, -0.15, 0], [4.0, 4.0, 4.0], { color : [1, 1, 0, 0.20], mask : '/public/img/-1_TRANS.png', pattern : '/public/img/-1_PATTERN.png' }),
+    new MaskedPlane([0, -0.00, 0], [4.0, 4.0, 4.0], { color : [1, 0, 1, 0.20], mask : '/public/img/+0_TRANS.png', pattern : '/public/img/+0_PATTERN.png' }),
+    new MaskedPlane([0, +0.15, 0], [4.0, 4.0, 4.0], { color : [1, 1, 1, 0.20], mask : '/public/img/+1_TRANS.png', pattern : '/public/img/+1_PATTERN.png' }),
+    new MaskedPlane([0, +0.30, 0], [4.0, 4.0, 4.0], { color : [0, 1, 1, 0.20], mask : '/public/img/+2_TRANS.png', pattern : '/public/img/+2_PATTERN.png' }),
   ];
   // Logo
   var _logo = new TogetherLogo(
-    [ 0, +.45, 0 ],
-    [ 2.0, 0.0, 1.0 ],
+    [ 0.0, 0.45, 0.0 ],
+    [ 2.0, 0.00, 1.0 ],
     { color : [ 0, 0, 0, 1. ] }
   );
 
