@@ -1,13 +1,9 @@
+/* exported Drawer */
+
 /**
  * Object that is used to draw
  */
-var Drawer = (function (gl, shader) {
-  return {
-    shader : _shader,
-    camera : _camera,
-    line : _line,
-    lines : _lines
-  };
+var Drawer = function (gl, shader) {
 
   var _pMatrix = new Float32Array([
     1, 0, 0, 0,
@@ -22,14 +18,22 @@ var Drawer = (function (gl, shader) {
     0, 0, 1
   ]);
 
+  return {
+    shader : _shader,
+    camera : _camera,
+    line : _line,
+    lines : _lines
+  };
+
   /**
    * Sets a new shader to use for setting attribute and uniform values
    * @param {!WebGLShader} newShader The new shader to use or NULL or undefined
    * @return {!WebGLShader} the current shader being used
    */
   function _shader (newShader) {
-    if (shader !== undefined)
+    if (shader !== undefined) {
       shader = newShader;
+    }
     return shader;
   }
 
@@ -52,15 +56,15 @@ var Drawer = (function (gl, shader) {
       return undefined;
     }
 
-    if (!(col1 && col2 && col1.length == 4 && col2.length == 4)) {
+    if (!(col1 && col2 && col1.length === 4 && col2.length === 4)) {
       col1 = [ 1, 1, 1, 1 ];
       col2 = [ 1, 1, 1, 1 ];
     }
 
     gl.useProgram(shader);
 
-    var aPosition = gl.getAttribLocation(shader, "aPosition");
-    var aColor = gl.getAttribLocation(shader, "aColor");
+    var aPosition = gl.getAttribLocation(shader, 'aPosition');
+    var aColor = gl.getAttribLocation(shader, 'aColor');
     gl.enableVertexAttribArray(aPosition);
     gl.enableVertexAttribArray(aColor);
 
@@ -74,8 +78,8 @@ var Drawer = (function (gl, shader) {
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(col1.concat(col2)), gl.STATIC_DRAW);
     gl.vertexAttribPointer(aColor, 4, gl.FLOAT, false, 0, 0);
 
-    var uPMatrix = gl.getUniformLocation(shader, "uPMatrix");
-    var uMVMatrix = gl.getUniformLocation(shader, "uMVMatrix");
+    var uPMatrix = gl.getUniformLocation(shader, 'uPMatrix');
+    var uMVMatrix = gl.getUniformLocation(shader, 'uMVMatrix');
     gl.uniformMatrix4fv(uPMatrix, false, _pMatrix);
     gl.uniformMatrix4fv(uMVMatrix, false, _mvMatrix);
 
@@ -90,25 +94,25 @@ var Drawer = (function (gl, shader) {
    * @param {!vector3f} v a set of three float values specifying where to draw the lines to
    * @return {undefined} undefined
    */
-  function _lines (u, v, col1, col2) {
+  function _lines (u, v) {
     var U = [];
     var V = [];
 
-    if (u.length != v.length) {
-      throw "`u` and `v` size mismatch";
+    if (u.length !== v.length) {
+      throw '`u` and `v` size mismatch';
     }
 
     for (var k = 0; k < u.length; k++) {
-      if (u[k].length == 3) {
+      if (u[k].length === 3) {
         U.append(u[k][0]);
         U.append(u[k][1]);
         U.append(u[k][2]);
       }
-      if (v[k].length == 3) {
+      if (v[k].length === 3) {
         V.append(v[k][0]);
         V.append(v[k][1]);
         V.append(v[k][2]);
       }
     }
   }
-});
+};

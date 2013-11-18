@@ -1,10 +1,13 @@
+/* global webgl : false */
+/* exported MaskedPlane */
+
 /**
- *
- * @param {float[3]} _pos [ x, y, z ] coordinates of the center
- * @param {float[3]} _dim [ w, h, d ] size of the plane
- * @param {object} _opts miscelaneous options - color
+ * Create a Masked Plane Object
+ * @param {float[3]}  _pos  [ x, y, z ] coordinates of the center
+ * @param {float[3]}  _dim  [ w, h, d ] size of the plane
+ * @param {object}    _opts miscelaneous options - color
  */
-var MaskedPlane = (function (_pos, _dim, _opts) {
+var MaskedPlane = function (_pos, _dim, _opts) {
   _opts = _opts || {};
   _opts.color = _opts.color !== undefined ? _opts.color : [ 1, 1, 1, 1 ];
   _opts.mask = _opts.mask !== undefined ? _opts.mask : undefined;
@@ -45,9 +48,9 @@ var MaskedPlane = (function (_pos, _dim, _opts) {
     gl.generateMipmap(gl.TEXTURE_2D);
     gl.bindTexture(gl.TEXTURE_2D, null);
     _imgLoaded = true;
-  }
+  };
 
-  if (_opts.mask !== undefined && typeof _opts.mask === "string") {
+  if (_opts.mask !== undefined && typeof _opts.mask === 'string') {
     _img.src = _opts.mask;
   }
 
@@ -66,16 +69,16 @@ var MaskedPlane = (function (_pos, _dim, _opts) {
     gl.generateMipmap(gl.TEXTURE_2D);
     gl.bindTexture(gl.TEXTURE_2D, null);
     _pattern.isLoaded = true;
-  }
+  };
 
-  if (_opts.pattern !== undefined && typeof _opts.pattern === "string") {
+  if (_opts.pattern !== undefined && typeof _opts.pattern === 'string') {
     _pattern.img.src = _opts.pattern;
   }
 
   _init();
 
   return {
-    _about : "transparency plane for together fest 5 - va.0.c",
+    _about : 'transparency plane for together fest 5 - va.0.c',
     set : _set,
     update : _update,
     draw : _draw
@@ -90,8 +93,8 @@ var MaskedPlane = (function (_pos, _dim, _opts) {
     //   * - -*
     // d        c
     _plane.z = 0;
-    var w = _dim[0]/2.;
-    var h = _dim[2]/2.;
+    var w = _dim[0]/2.0;
+    var h = _dim[2]/2.0;
     var a = [ _pos[0] - w, _pos[1], _pos[2] - h ];
     var b = [ _pos[0] + w, _pos[1], _pos[2] - h ];
     var c = [ _pos[0] + w, _pos[1], _pos[2] + h ];
@@ -128,7 +131,7 @@ var MaskedPlane = (function (_pos, _dim, _opts) {
     }
 
     // @@@ assign normals
-    normals = [ 
+    normals = [
       // 1-3-2
       1, 1, 1,
       1, 1, 1,
@@ -141,13 +144,13 @@ var MaskedPlane = (function (_pos, _dim, _opts) {
 
     texCoords = [
       // 1-3-4
-      0., 0.,
-      1., 1.,
-      0., 1.,
+      0.0, 0.0,
+      1.0, 1.0,
+      0.0, 1.0,
       // 1-3-2
-      0., 0.,
-      1., 1.,
-      1., 0.,
+      0.0, 0.0,
+      1.0, 1.0,
+      1.0, 0.0,
     ];
 
     _grid.tiles = 2;
@@ -173,42 +176,43 @@ var MaskedPlane = (function (_pos, _dim, _opts) {
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
   }
 
-  function _set(opts) {
+  function _set() {
   }
 
   function _update() {
   }
 
   function _draw(shader) {
-    if (!_imgLoaded)
+    if (!_imgLoaded) {
       return;
+    }
 
     gl.useProgram(shader);
     webgl.pushModelView();
-    webgl.perspectiveMatrix({ fieldOfView : 45, aspectRatio : 1, nearPlane : .1, farPlane : 100 });
+    webgl.perspectiveMatrix({ fieldOfView : 45, aspectRatio : 1, nearPlane : 0.1, farPlane : 100 });
 
     var normalMatrix = mat3.create();
     mat4.toInverseMat3(webgl.mvMatrix, normalMatrix);
     mat3.transpose(normalMatrix);
 
-    var aPosition = gl.getAttribLocation(shader, "aPosition");
-    var aColor = gl.getAttribLocation(shader, "aColor");
-    var aNormal = gl.getAttribLocation(shader, "aNormal");
-    var aTexCoord = gl.getAttribLocation(shader, "aTexCoord");
+    var aPosition = gl.getAttribLocation(shader, 'aPosition');
+    var aColor    = gl.getAttribLocation(shader, 'aColor');
+    var aNormal   = gl.getAttribLocation(shader, 'aNormal');
+    var aTexCoord = gl.getAttribLocation(shader, 'aTexCoord');
     gl.enableVertexAttribArray(aPosition);
     gl.enableVertexAttribArray(aColor);
     gl.enableVertexAttribArray(aNormal);
     gl.enableVertexAttribArray(aTexCoord);
 
-    var uMVMatrix = gl.getUniformLocation(shader, "uMVMatrix");
-    var uPMatrix = gl.getUniformLocation(shader, "uPMatrix");
-    var uNMatrix = gl.getUniformLocation(shader, "uNMatrix");
+    var uMVMatrix = gl.getUniformLocation(shader, 'uMVMatrix');
+    var uPMatrix  = gl.getUniformLocation(shader, 'uPMatrix');
+    var uNMatrix  = gl.getUniformLocation(shader, 'uNMatrix');
 
-    var uLightDir = gl.getUniformLocation(shader, "uLightDir");
-    var uAmbientCol = gl.getUniformLocation(shader, "uAmbientCol");;
-    var uDirectionalCol = gl.getUniformLocation(shader, "uDirectionalCol");;
-    var uMaskTexture = gl.getUniformLocation(shader, "uMaskTexture");;
-    var uPatternTexture = gl.getUniformLocation(shader, "uPatternTexture");;
+    var uLightDir       = gl.getUniformLocation(shader, 'uLightDir');
+    var uAmbientCol     = gl.getUniformLocation(shader, 'uAmbientCol');
+    var uDirectionalCol = gl.getUniformLocation(shader, 'uDirectionalCol');
+    var uMaskTexture    = gl.getUniformLocation(shader, 'uMaskTexture');
+    var uPatternTexture = gl.getUniformLocation(shader, 'uPatternTexture');
 
     // Set camera matrices
     gl.uniformMatrix4fv(uPMatrix, false, webgl.pMatrix);
@@ -218,7 +222,7 @@ var MaskedPlane = (function (_pos, _dim, _opts) {
     // Lighting Vectors
     var lightDir = vec3.normalize([ 0, 0, 1 ]);
     gl.uniform3fv(uLightDir, lightDir);
-    gl.uniform3f(uAmbientCol, .25, .25, .25);
+    gl.uniform3f(uAmbientCol, 0.25, 0.25, 0.25);
     gl.uniform3f(uDirectionalCol, 1, 1, 1);
 
     // Specify position attribute
@@ -252,28 +256,4 @@ var MaskedPlane = (function (_pos, _dim, _opts) {
 
     webgl.popModelView();
   }
-
-  function _drawNormals() {
-    for (var k=0; k < _vbo.normals.length/3; k++) {
-      var i = 3 * k;
-      var n = [
-        _vbo.normals[i+0],
-        _vbo.normals[i+1],
-        _vbo.normals[i+2]
-      ];
-      var p = [
-        _vbo.positions[i+0],
-        _vbo.positions[i+1],
-        _vbo.positions[i+2]
-      ];
-      var q = [
-        p[0] + .7 * n[0],
-        p[1] + .7 * n[1],
-        p[2] + .7 * n[2]
-      ];
-      _drawer.line(p, q, [1,1,1,1], [.8,.4,.4,1]);
-    }
-  }
-});
-
-
+};

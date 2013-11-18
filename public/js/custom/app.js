@@ -1,6 +1,9 @@
-'use strict';
+/* global webgl       : false */
+/* global MaskedPlane : false */
+/* global TogetherLogo: false */
+/* exported app */
 
-var app = function (_canvasId) {
+var app = function (_canvasId) { 'use strict';
   var _canvas = document.getElementById(_canvasId), _gl = _canvas.getContext('webgl') || _canvas.getContext('experimental-webgl');
 
   var _rotation = [ 0, 0, 0 ], _momentum = [ 0, 0, 0 ];
@@ -17,27 +20,26 @@ var app = function (_canvasId) {
   var _logo = new TogetherLogo(
     [ 0.0, 0.45, 0.0 ],
     [ 2.0, 0.00, 1.0 ],
-    { color : [ 0, 0, 0, 1. ] }
+    { color : [ 0, 0, 0, 1.0 ] }
   );
 
-  var _is = { running : true };
   var _isRunning = true;
 
   // ...
   var _pressedKeys = {};
   
   var _controls = {
-    z_translate : 4.,
+    z_translate   : 4.0,
     textureNumber : 0,
-    lighting_x : 0.10,
-    lighting_y : 0.1,
-    lighting_z : 0.1,
+    lighting_x    : 0.10,
+    lighting_y    : 0.1,
+    lighting_z    : 0.1,
     lightingDirection : [ -1.00, -0.30, -1.0 ],
-    ambientLightColor : [ +.35 * 255, .30 * 255, .27 * 255 ],
-    directionalLightColor : [ .6 * 255, .6 * 255, .6 * 255 ],
-    alpha : 1.,
-    transparency : true,
-    rotate : 0.2,
+    ambientLightColor : [ +0.35 * 255, 0.30 * 255, 0.27 * 255 ],
+    directionalLightColor : [ 0.6 * 255, 0.6 * 255, 0.6 * 255 ],
+    alpha         : 1.0,
+    transparency  : true,
+    rotate        : 0.2
   };
 
   // var _gui = new dat.GUI();
@@ -45,16 +47,15 @@ var app = function (_canvasId) {
 
   document.onkeyup = function (ev) {
     _pressedKeys[ev.keyCode] = false;
-  }
+  };
 
   document.onkeydown = function (ev) {
     _pressedKeys[ev.keyCode] = true;
-  }
+  };
 
   // ...
-  var _passProg = webgl.createProgramFromIds(gl, "vert-pass", "frag-pass");
-  var _maskProg = webgl.createProgramFromIds(gl, "vert-mask", "frag-mask");
-  var _patternMaskProg = webgl.createProgramFromIds(gl, "vert-pattern-mask", "frag-pattern-mask");
+  var _maskProg = webgl.createProgramFromIds(gl, 'vert-mask', 'frag-mask');
+  var _patternMaskProg = webgl.createProgramFromIds(gl, 'vert-pattern-mask', 'frag-pattern-mask');
 
   // Return actual object
   return {
@@ -63,10 +64,12 @@ var app = function (_canvasId) {
       _gl.bindBuffer(_gl.ARRAY_BUFFER, null);
     },
     addMovement : function (dx, dy) {
-      if (isNaN(dx) && !isFinite(dx))
-        dx = 0.;
-      if (isNaN(dy) && !isFinite(dy))
-        dy = 0.;
+      if (isNaN(dx) && !isFinite(dx)) {
+        dx = 0.0;
+      }
+      if (isNaN(dy) && !isFinite(dy)) {
+        dy = 0.0;
+      }
 
       _momentum[0] -= _sign(dx) * Math.min(Math.sqrt(Math.abs(dx))/200, 10);
       _momentum[2] -= _sign(dy) * Math.min(Math.sqrt(Math.abs(dy))/200, 10);
@@ -82,8 +85,9 @@ var app = function (_canvasId) {
    * @return {undefined} undefined
    */
   function loop () {
-    if (_isRunning)
+    if (_isRunning) {
       requestAnimationFrame(loop);
+    }
     update();
     draw();
   }
@@ -97,7 +101,6 @@ var app = function (_canvasId) {
   }
 
   function update() {
-    updatePosition();
     // _rotation[0] += _rotation[0]
     // _rotation[2] += 1.1;
     _rotation[0] /= 1.025;
@@ -113,14 +116,13 @@ var app = function (_canvasId) {
    * @return {undefined} undefined
    */
   function draw() {
-    gl.viewport(0, 0, canvas.width, canvas.height);
+    gl.viewport(0, 0, _canvas.width, _canvas.height);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    var t = getElapsedSeconds() / 1.5;
     webgl.perspectiveMatrix({
       fieldOfView : 45,
       aspectRatio : 1,
-      nearPlane : .1,
-      farPlane : 100
+      nearPlane   : 0.1,
+      farPlane    : 100
     });
 
     mat4.identity(webgl.mvMatrix);
@@ -146,21 +148,4 @@ var app = function (_canvasId) {
     _gl.blendFunc(_gl.SRC_ALPHA, _gl.ONE_MINUS_SRC_ALPHA);
     _logo.draw(_maskProg);
   }
-
-  function updatePosition() {
-    if (_pressedKeys[72]) {
-    }
-    if (_pressedKeys[74]) {
-    }
-    if (_pressedKeys[75]) {
-    }
-    if (_pressedKeys[76]) {
-    }
-    if (_pressedKeys[87]) {
-      _controls.z_translate += .09;
-    }
-    if (_pressedKeys[83]) {
-      _controls.z_translate -= .09;
-    }
-  }
-}
+};

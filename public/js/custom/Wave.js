@@ -1,9 +1,11 @@
+/* global canvas : false */
+/* exported getElapsedSeconds, Wave  */
 var getElapsedSeconds = (function () {
   var $_$ = +new Date();
-  return function () { return (new Date() - $_$)/1000.; };
+  return function () { return (new Date() - $_$)/1000; };
 })();
 
-var Wave = (function (id) {
+var Wave = function (id) {
   var _const = {
     freq : 14 - 1.1387,
     shift : 2 + 1.64166,
@@ -23,12 +25,12 @@ var Wave = (function (id) {
   */
 
   var _canvas = document.getElementById(id);
-  var _c = _canvas.getContext("2d");
+  var _c = _canvas.getContext('2d');
   var _isRunning = true;
   var _img = new Image();
-  _img.src = "/public/BKGD.png";
+  _img.src = '/public/BKGD.png';
   _img.onload = function () {
-  }
+  };
 
   var ___ = {
     a : 1.0,
@@ -44,78 +46,6 @@ var Wave = (function (id) {
     +0.02147800, +0.00887470, -0.00902450, -0.01640690, -0.00873870,
     +0.00524910, +0.01280000, +0.00836650, -0.00269900, -0.01008200
   ];
-
-  function circleWave (x) {
-  }
-
-  function _noise (x) {
-    var y = 0.0;
-    y += .57 * Math.cos(x/9);
-    y += .07 * Math.sin(3 * x);
-    y += .03 * Math.sin(5 * x);
-    y += .03 * Math.sin(13 * x);
-    y += .03 * Math.cos(5 * x);
-    y += .03 * Math.cos(Math.sin(5 * x));
-    y += .03 * Math.cos(Math.cos(7 * x) * x);
-    return ___.e * (.18 * y + .48 * Math.cos(x/2) * x);
-  }
-
-  function _wave1 (x) {
-    x += 1;
-    var sgn = 1.;
-    if (x % 4 < 2.0) {
-      sgn = -1;
-    }
-    x %= 2;
-    x -= 1;
-    var set = [ 1, 9, 10, 15, 16, 17, 21, 22 ];
-    var y = 0.0;
-    for (var i = 0; i < set.length; i++) {
-      var k = set[i];
-      y += a[k] * Math.cos(k * x);
-    }
-    return sgn * y;
-  }
-
-  function _wave2 (x) {
-    x += 1;
-    var sgn = 1.;
-    if (x % 4 < 2.0) {
-      sgn = -1;
-    }
-    x %= 2;
-    x -= 1;
-    var set = [ 2, 3, 4, 12, 13, 14, 18, 20 ];
-    var y = 0.0;
-    for (var i = 0; i < set.length; i++) {
-      var k = set[i];
-      y += a[k] * Math.cos(k * x);
-    }
-    return sgn * y;
-  }
-
-  function _wave3 (x) {
-    x += 1;
-    var sgn = 1.;
-    if (x % 4 < 2.0) {
-      sgn = -1;
-    }
-    x %= 2;
-    x -= 1;
-    var set = [ 5, 6, 7, 8, 11, 19, 23, 24 ];
-    var y = 0.0;
-    for (var i = 0; i < set.length; i++) {
-      var k = set[i];
-      y += a[k] * Math.cos(k * x);
-    }
-    return sgn * y;
-  }
-
-  (function () {
-    // Coefficients for 
-    var offset = .75;
-    var scale  = 1/1.6;
-  })();
 
   var _mesh = [ ];
   var _xmin = -1.00, _xmax = 1.0, _xsize = 90;
@@ -140,35 +70,29 @@ var Wave = (function (id) {
    *  --======*==-
    */
   function _set (vals) {
-    if (vals === undefined)
+    if (vals === undefined) {
       return;
-    if (typeof vals.a == "number" && vals.a) 
+    }
+    if (typeof vals.a === 'number' && vals.a) {
       ___.a += vals.a;
-    if (typeof vals.b == "number" && vals.b) 
+    }
+    if (typeof vals.b === 'number' && vals.b) {
       ___.b += vals.b;
-    if (typeof vals.c == "number" && vals.c) 
-      ___.c += .001;
-    if (typeof vals.e == "number") 
+    }
+    if (typeof vals.c === 'number' && vals.c) {
+      ___.c += 0.001;
+    }
+    if (typeof vals.e === 'number') {
       ___.e += ___.e < 1 ? Math.min(vals.e, 1) : 0;
+    }
   }
   function _loop () {
-    if (_isRunning)
+    if (_isRunning) {
       requestAnimationFrame(_loop);
+    }
     canvas.width = canvas.width;
     _update();
     _draw();
-  }
-  // ...
-  function _alpha (val) {
-    if (val !== undefined)
-      _alpha = val;
-    return _alpha;
-  }
-  // ...
-  function _beta (val) {
-    if (val !== undefined)
-      _beta = val;
-    return _beta;
   }
   /**
    *
@@ -181,14 +105,14 @@ var Wave = (function (id) {
 
       var xfreq = _x.freq + _const.freq;
       var xshift = _x.shift + _const.shift;
-      var val = xfreq * (x + 1.25) + xshift
+      var val = xfreq * (x + 1.25) + xshift;
       y += ___.a * _circleWave(val);
       y += ___.e * _noise1(val);
       y += (___.e * ___.e) * _ripple(val + 4*t);
       y -= _trickle(val + 4.90*t);
       y /= 8.5;
       y *= _const.yscale;
-      y -= .006;
+      y -= 0.006;
       _mesh[i] = [ x, y ];
     }
 
@@ -206,13 +130,13 @@ var Wave = (function (id) {
 
     _c.lineWidth   = '0.010';
 
-    _c.transform(+a, +0, +0, +b, +a, +b); 
+    _c.transform(+a, +0, +0, +b, +a, +b);
     _c.drawImage(_img, -1, -1, 2, 2);
 
     var faded = 'rgba(020, 020, 20, 0)';
     var dark  = 'rgba(100, 200, 0, .7)';
 
-    _c.transform(1, 0, 0, -1, 0, 0); 
+    _c.transform(1, 0, 0, -1, 0, 0);
     var g = _c.createLinearGradient(-1, 0, 1, 0);
     g.addColorStop(0.0, faded);
     g.addColorStop(0.3, dark);
@@ -235,9 +159,10 @@ var Wave = (function (id) {
 
   function _circleWave (x) {
     x += 1;
-    var sgn = 1.;
-    if (x % 4 < 2.0)
+    var sgn = 1.0;
+    if (x % 4 < 2.0) {
       sgn = -1;
+    }
     x %= 2;
     x -= 1;
     return sgn * Math.sqrt(1 - x * x);
@@ -252,6 +177,6 @@ var Wave = (function (id) {
   }
 
   function _trickle (x) {
-    return .02 * Math.cos(30 * x) + .02 * Math.sin(7*x)+ .02 * Math.sin(5*x);;
+    return 0.02 * Math.cos(30 * x) + 0.02 * Math.sin(7*x)+ 0.02 * Math.sin(5*x);
   }
-});
+};

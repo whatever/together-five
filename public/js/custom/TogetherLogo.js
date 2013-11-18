@@ -1,10 +1,13 @@
+/* global webgl : false */
+/* exported TogetherLogo */
+
 /**
  *
  * @param {float[3]} _pos [ x, y, z ] coordinates of the center
  * @param {float[3]} _dim [ w, h, d ] size of the plane
  * @param {object} _opts miscelaneous options - color
  */
-var TogetherLogo = (function (_pos, _dim, _opts) {
+var TogetherLogo = function (_pos, _dim, _opts) {
   // Together Logo
   var _texture = gl.createTexture();
   var _imgLoaded = false;
@@ -18,8 +21,8 @@ var TogetherLogo = (function (_pos, _dim, _opts) {
     gl.generateMipmap(gl.TEXTURE_2D);
     gl.bindTexture(gl.TEXTURE_2D, null);
     _imgLoaded = true;
-  }
-  _img.src = "/public/img/together_logo.png";
+  };
+  _img.src = '/public/img/together_logo.png';
 
 
   _opts = _opts || {};
@@ -51,8 +54,7 @@ var TogetherLogo = (function (_pos, _dim, _opts) {
   _init();
 
   return {
-    _about : "transparency plane for together fest 5 - va.0.c",
-    set : _set,
+    _about : 'Together 5 Logo',
     update : _update,
     draw : _draw
   };
@@ -66,8 +68,8 @@ var TogetherLogo = (function (_pos, _dim, _opts) {
     //   * - -*
     // d        c
     _plane.z = 0;
-    var w = _dim[0]/2.;
-    var h = _dim[2]/2.;
+    var w = _dim[0]/2.0;
+    var h = _dim[2]/2.0;
     var a = [ _pos[0] - w, _pos[1], _pos[2] - h ];
     var b = [ _pos[0] + w, _pos[1], _pos[2] - h ];
     var c = [ _pos[0] + w, _pos[1], _pos[2] + h ];
@@ -104,7 +106,7 @@ var TogetherLogo = (function (_pos, _dim, _opts) {
     }
 
     // @@@ assign normals
-    normals = [ 
+    normals = [
       // 1-3-2
       1, 1, 1,
       1, 1, 1,
@@ -117,13 +119,13 @@ var TogetherLogo = (function (_pos, _dim, _opts) {
 
     texCoords = [
       // 1-3-4
-      0., 0.,
-      1., 1.,
-      0., 1.,
+      0.0, 0.0,
+      1.0, 1.0,
+      0.0, 1.0,
       // 1-3-2
-      0., 0.,
-      1., 1.,
-      1., 0.
+      0.0, 0.0,
+      1.0, 1.0,
+      1.0, 0.0
     ];
 
     _grid.tiles = 2;
@@ -151,42 +153,39 @@ var TogetherLogo = (function (_pos, _dim, _opts) {
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
   }
 
-  function _set(opts) {
-  }
-
   function _update() {
   }
 
   function _draw(shader) {
-    // @@@
-    if (!_imgLoaded)
+    if (!_imgLoaded) {
       return;
+    }
 
     webgl.pushModelView();
-    webgl.perspectiveMatrix({ fieldOfView : 45, aspectRatio : 1, nearPlane : .1, farPlane : 100 });
+    webgl.perspectiveMatrix({ fieldOfView : 45, aspectRatio : 1, nearPlane : 0.1, farPlane : 100 });
     gl.useProgram(shader);
 
     var normalMatrix = mat3.create();
     mat4.toInverseMat3(webgl.mvMatrix, normalMatrix);
     mat3.transpose(normalMatrix);
 
-    var aPosition = gl.getAttribLocation(shader, "aPosition");
-    var aColor    = gl.getAttribLocation(shader, "aColor");
-    var aNormal   = gl.getAttribLocation(shader, "aNormal");
-    var aTexCoord = gl.getAttribLocation(shader, "aTexCoord");
+    var aPosition = gl.getAttribLocation(shader, 'aPosition');
+    var aColor    = gl.getAttribLocation(shader, 'aColor');
+    var aNormal   = gl.getAttribLocation(shader, 'aNormal');
+    var aTexCoord = gl.getAttribLocation(shader, 'aTexCoord');
     gl.enableVertexAttribArray(aPosition);
     gl.enableVertexAttribArray(aColor);
     gl.enableVertexAttribArray(aNormal);
     gl.enableVertexAttribArray(aTexCoord);
 
-    var uMVMatrix = gl.getUniformLocation(shader, "uMVMatrix");
-    var uPMatrix  = gl.getUniformLocation(shader, "uPMatrix");
-    var uNMatrix  = gl.getUniformLocation(shader, "uNMatrix");
+    var uMVMatrix = gl.getUniformLocation(shader, 'uMVMatrix');
+    var uPMatrix  = gl.getUniformLocation(shader, 'uPMatrix');
+    var uNMatrix  = gl.getUniformLocation(shader, 'uNMatrix');
 
-    var uLightDir       = gl.getUniformLocation(shader, "uLightDir");
-    var uAmbientCol     = gl.getUniformLocation(shader, "uAmbientCol");;
-    var uDirectionalCol = gl.getUniformLocation(shader, "uDirectionalCol");;
-    var uSamplerTexture = gl.getUniformLocation(shader, "uSamplerTexture");;
+    var uLightDir       = gl.getUniformLocation(shader, 'uLightDir');
+    var uAmbientCol     = gl.getUniformLocation(shader, 'uAmbientCol');
+    var uDirectionalCol = gl.getUniformLocation(shader, 'uDirectionalCol');
+    var uSamplerTexture = gl.getUniformLocation(shader, 'uSamplerTexture');
 
     // Set camera matrices
     gl.uniformMatrix4fv(uPMatrix,  false, webgl.pMatrix);
@@ -194,10 +193,9 @@ var TogetherLogo = (function (_pos, _dim, _opts) {
     gl.uniformMatrix3fv(uNMatrix,  false, normalMatrix);
 
     // Lighting Vectors
-    var t = getElapsedSeconds();
     var lightDir = vec3.normalize([ 0, 0, 1 ]);
     gl.uniform3fv(uLightDir, lightDir);
-    gl.uniform3f(uAmbientCol, .25, .25, .25);
+    gl.uniform3f(uAmbientCol, 0.25, 0.25, 0.25);
     gl.uniform3f(uDirectionalCol, 1, 1, 1);
 
     // Specify position attribute
@@ -227,28 +225,4 @@ var TogetherLogo = (function (_pos, _dim, _opts) {
     // ...
     webgl.popModelView();
   }
-
-  function _drawNormals() {
-    for (var k=0; k < _vbo.normals.length/3; k++) {
-      var i = 3 * k;
-      var n = [
-        _vbo.normals[i+0],
-        _vbo.normals[i+1],
-        _vbo.normals[i+2]
-      ];
-      var p = [
-        _vbo.positions[i+0],
-        _vbo.positions[i+1],
-        _vbo.positions[i+2]
-      ];
-      var q = [
-        p[0] + .7 * n[0],
-        p[1] + .7 * n[1],
-        p[2] + .7 * n[2]
-      ];
-      // _drawer.line(p, q, [1,1,1,1], [.8,.4,.4,1]);
-    }
-  }
-});
-
-
+};

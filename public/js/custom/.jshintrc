@@ -1,0 +1,48 @@
+{
+  "globals" : {
+    "gl"    : false,
+    "mat4"  : false,
+    "mat3"  : false,
+    "vec3"  : false,
+    "requestAnimationFrame" : false
+  },
+  /* Common */
+ 
+  // Enforcing
+  "camelcase": false,
+  "curly": true,
+  "eqeqeq": true,
+  "immed": true,
+  "latedef": false,
+  "newcap": true,
+  "noarg": true,
+  "noempty": true,
+  "nonew": true,
+  "quotmark": "single",
+  "trailing": true,
+  "undef": true,
+  "unused": true,
+  "globalstrict" : true,
+
+  // Legacy
+  "onevar": false,
+ 
+  /* Local */
+ 
+  // Enforcing
+  "bitwise": false,
+  "forin": false,
+  "regexp": false,
+  "strict": false,
+  // Relaxing
+  "laxbreak": true,
+  "smarttabs": true,
+  "multistr": true,
+  // Environment
+  "browser": true,
+  "node": true,
+  // Legacy
+  "nomen": false,
+ 
+  "predef": [ ]
+}

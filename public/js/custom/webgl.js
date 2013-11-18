@@ -1,7 +1,10 @@
-var webgl = (function () {
+/* exported webgl */
+
+var webgl = (function () { 'use strict';
+
   var _mvMatrixStack = [], _pMatrixStack = [];
   return {
-    ___about : "webgl",
+    ___about : 'webgl',
     mvMatrix : mat4.create(),
     pMatrix : mat4.create(),
     nMatrix : mat4.create(),
@@ -17,7 +20,7 @@ var webgl = (function () {
       gl.shaderSource(shader, shaderSource);
       gl.compileShader(shader);
       if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        console.log("** SHADER ERROR **");
+        console.log('** SHADER ERROR **');
         console.log(gl.getShaderInfoLog(shader));
       }
       return shader;
@@ -34,8 +37,9 @@ var webgl = (function () {
       gl.attachShader(program, vertShader);
       gl.attachShader(program, fragShader);
       gl.linkProgram(program);
-      if (!gl.getProgramParameter(program, gl.LINK_STATUS))
-        console.log("** PROGRAM ERROR **");
+      if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+        console.log('** PROGRAM ERROR **');
+      }
       return program;
     },
     /*
@@ -55,8 +59,9 @@ var webgl = (function () {
      */
     getShaderSource : function (id) {
       var shader = document.getElementById(id);
-      if (!shader)
-        throw "Fuck";
+      if (!shader) {
+        throw 'Could not find shader source';
+      }
       return shader.text;
     },
     /**
@@ -69,8 +74,8 @@ var webgl = (function () {
       m = m || {};
       m.fieldOfView = m.fieldOfView || 30.0;
       m.aspectRatio = m.aspectRatio || 1;
-      m.nearPlane = m.nearPlane || .1;
-      m.farPlane = m.farPlane || 100.0;
+      m.nearPlane   = m.nearPlane || 0.1;
+      m.farPlane    = m.farPlane || 100.0;
 
       mat4.perspective(m.fieldOfView, m.aspectRatio, m.nearPlane, m.farPlane, this.pMatrix);
       return this.pMatrix;
@@ -96,7 +101,6 @@ var webgl = (function () {
      * @return {undefined} undefined
      */
     pushMatrices : function () {
-      pushModelView();
       _pMatrixStack.push(this.pMatrix);
     },
     /**
@@ -104,27 +108,16 @@ var webgl = (function () {
      * @return {undefined} undefined
      */
     popMatrices : function () {
-      popModelView();
       this.pMatrix = _pMatrixStack.pop();
-    },
-    /**
-     * Set Matrices
-     */
-    setMatrices : function (camera) {
-      if (camera.mvMatrix !== undefined) {
-      }
-      if (camera.pMatrix !== undefined) {
-      }
     }
   };
 })();
 
 window.requestAnimFrame = (function() {
-  return
-    window.requestAnimationFrame ||
+  return window.requestAnimationFrame ||
     window.webkitRequestAnimationFrame ||
     window.mozRequestAnimationFrame ||
     window.oRequestAnimationFrame ||
-    window.msRequestAnimationFrame ||
-    function (callback) { setInterval(callback, 1000/60); }
+    window.msRequestAnimationFrame;
+    // || function (callback) { setInterval(callback, 1000/60); };
 })();
