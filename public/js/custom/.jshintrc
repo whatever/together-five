@@ -33,7 +33,7 @@
   "bitwise": false,
   "forin": false,
   "regexp": false,
-  "strict": false,
+  "strict": true,
   // Relaxing
   "laxbreak": true,
   "smarttabs": true,
