@@ -1,14 +1,7 @@
-/**
- * Server
- */
-var express = require("express"),
-    app = express(),
-    http = require("http"),
-    https = require("https"),
-    server = http.createServer(app).listen(process.env.PORT),
-    io = require("socket.io").listen(server),
-    fs = require("fs")
-    ;
+var express = require("express");
+var app     = express();
+var http    = require("http");
+var server  = http.createServer(app).listen(process.env.PORT || 5000);
 
 app.use(express.bodyParser());
 app.use('/public', express.static(__dirname + '/public'));

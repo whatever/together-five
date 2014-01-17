@@ -5,6 +5,39 @@ var getElapsedSeconds = (function () {
   return function () { return (new Date() - $_$)/1000; };
 })();
 
+/**
+ * Get Mouse Position from Event (Cross-Browser)
+ */
+var getMousePosition = (function() {
+  if (window.pageXOffset!= undefined) {
+    return function (ev) {
+      return [ev.clientX+window.pageXOffset, ev.clientY+window.pageYOffset];
+    };
+  }
+  else {
+    return function () {
+      var ev = window.event,
+      d = document.documentElement, b= document.body;
+      return [ev.clientX+d.scrollLeft+ b.scrollLeft, ev.clientY+d.scrollTop+ b.scrollTop];
+    };
+  }
+})();
+
+window.onmousemove = (function () {
+  var last = { x : undefined, y : undefined };
+  return function (ev) {
+    var xy = getMousePosition(ev);
+    var dx = 0, dy = 0;
+    if (typeof last.x === 'number')
+      dx = xy[0] - last.x;
+    if (typeof last.y === 'number')
+      dy = xy[1] - last.y;
+    last.x = xy[0];
+    last.y = xy[1];
+    console.log([dx, dy]);
+  };
+})();
+
 var Wave = function (id) {
   var _const = {
     freq : 14 - 1.1387,
@@ -24,7 +57,12 @@ var Wave = function (id) {
   _gui.add(_const, "yscale", 0., 2., .05);
   */
 
-  var _canvas = document.getElementById(id);
+  var _canvas;
+  if (id === undefined)
+    _canvas = document.createElement('CANVAS');
+  else
+    _canvas = document.getElementById(id);
+
   var _c = _canvas.getContext('2d');
   var _isRunning = true;
   var _img = new Image();
@@ -87,9 +125,7 @@ var Wave = function (id) {
     }
   }
   function _loop () {
-    if (_isRunning) {
-      requestAnimationFrame(_loop);
-    }
+    requestAnimationFrame(_loop);
     canvas.width = canvas.width;
     _update();
     _draw();

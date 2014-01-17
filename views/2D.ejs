@@ -26,7 +26,6 @@ I7II777777I??+?=7777$$$$$$$$$$$$$$$$777,77777777$7777777777I?~7777$$$$$$$$$$$$$$
     <script src="/public/js/vendor/live.js"       ></script>
     <script src="/public/js/vendor/dat.gui.min.js"></script>
     <script src="/public/js/custom/Wave.js"       ></script>
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
 
     <style>
       body, html {
@@ -93,7 +92,6 @@ I7II777777I??+?=7777$$$$$$$$$$$$$$$$777,77777777$7777777777I?~7777$$$$$$$$$$$$$$
       <canvas width="500" height="500" id="pleasefeeldeepthanks">WebGL is unsupported.</canvas>
     </div>
 
-    <script src="http://codeorigin.jquery.com/jquery-2.0.3.min.js"></script>
     <script type="text/javascript">
       var gl = undefined;
       var context = undefined;
@@ -101,7 +99,7 @@ I7II777777I??+?=7777$$$$$$$$$$$$$$$$777,77777777$7777777777I?~7777$$$$$$$$$$$$$$
 
       function main() {
         canvas = document.getElementById("pleasefeeldeepthanks");
-        svvim = Wave("pleasefeeldeepthanks");
+        svvim = Wave('pleasefeeldeepthanks');
         svvim.loop();
       }
 
@@ -114,13 +112,14 @@ I7II777777I??+?=7777$$$$$$$$$$$$$$$$777,77777777$7777777777I?~7777$$$$$$$$$$$$$$
           var pos = { x : ev.clientX, y : ev.clientY };
           var dx = pos.x - prev.x;
           var dy = pos.y - prev.y;
+          var d = Math.sqrt(dx*dx + dy*dy) / 1000.;
           prev = pos;
           var a = .2 * dx/20 * Math.cos(dx/05);
           var b = .2 * Math.sin(dy/05);
-           svvim.set({ a : a, b : a*b, c : a * a * b, e : 0.7 });
+           svvim.set({ a : d, b : d, c : d, e : d });
         };
       })();
-      $(window).mousemove(mouseListener);
+      // $(window).mousemove(mouseListener);
 
       var scrollListener = (function () {
         var _top = undefined;
@@ -136,7 +135,7 @@ I7II777777I??+?=7777$$$$$$$$$$$$$$$$777,77777777$7777777777I?~7777$$$$$$$$$$$$$$
           _top = $(window).scrollTop();
         };
       })();
-      $(window).scroll(scrollListener);
+      // $(window).scroll(scrollListener);
     </script>
     <!-- <img src="/public/BKGD.png"> -->
     <br> <br> <br> <br> <br>
