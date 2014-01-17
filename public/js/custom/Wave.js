@@ -23,45 +23,17 @@ var getMousePosition = (function() {
   }
 })();
 
-window.onmousemove = (function () {
-  var last = { x : undefined, y : undefined };
-  return function (ev) {
-    var xy = getMousePosition(ev);
-    var dx = 0, dy = 0;
-    if (typeof last.x === 'number')
-      dx = xy[0] - last.x;
-    if (typeof last.y === 'number')
-      dy = xy[1] - last.y;
-    last.x = xy[0];
-    last.y = xy[1];
-    console.log([dx, dy]);
-  };
-})();
-
 var Wave = function (id) {
-  var _const = {
-    freq : 14 - 1.1387,
-    shift : 2 + 1.64166,
-    yscale : 0.7
-  };
-
-  var _x = {
-    freq : 0.0001,
-    shift: 0.0001
-  };
-
-  /*
-  var _gui = new dat.GUI();
-  _gui.add(_x, "freq",  -4., +4., .05);
-  _gui.add(_x, "shift", -2., +5., .10);
-  _gui.add(_const, "yscale", 0., 2., .05);
-  */
-
+  var _const = { freq : 14 - 1.1387, shift : 2 + 1.64166, yscale : 0.7 };
+  var _x = { freq : 0.0001, shift: 0.0001 };
   var _canvas;
+
   if (id === undefined)
     _canvas = document.createElement('CANVAS');
-  else
+  else if (typeof id === 'string')
     _canvas = document.getElementById(id);
+  else
+    _canvas = id;
 
   var _c = _canvas.getContext('2d');
   var _isRunning = true;
@@ -95,6 +67,22 @@ var Wave = function (id) {
     _mesh.push([ x, y ]);
   }
 
+  window.onmousemove = (function () {
+    var last = { x : undefined, y : undefined };
+    return function (ev) {
+      var xy = getMousePosition(ev);
+      var dx = 0, dy = 0;
+      if (typeof last.x === 'number')
+        dx = Math.abs(xy[0] - last.x)/3;
+      if (typeof last.y === 'number')
+        dy = Math.abs(xy[1] - last.y)/3;
+      var d = Math.sqrt(dx*dx + dy*dy) * 40;
+      last.x = xy[0];
+      last.y = xy[1];
+      _set({ a : 0, b : (.7*dy + .3*dx), c : d*(dx + dy), e : dx });
+    };
+  })();
+
   return {
     set     : _set,
     loop    : _loop,
@@ -121,12 +109,13 @@ var Wave = function (id) {
       ___.c += 0.001;
     }
     if (typeof vals.e === 'number') {
-      ___.e += ___.e < 1 ? Math.min(vals.e, 1) : 0;
+      // ___.e += ___.e < 1 ? Math.max(vals.e, 1) : 0;
+      ___.e = 1.;
     }
   }
   function _loop () {
     requestAnimationFrame(_loop);
-    canvas.width = canvas.width;
+    _canvas.width = _canvas.width;
     _update();
     _draw();
   }
@@ -143,10 +132,9 @@ var Wave = function (id) {
       var xshift = _x.shift + _const.shift;
       var val = xfreq * (x + 1.25) + xshift;
       y += ___.a * _circleWave(val);
-      y += ___.e * _noise1(val);
-      y += (___.e * ___.e) * _ripple(val + 4*t);
-      y -= _trickle(val + 4.90*t);
-      y /= 8.5;
+      y += ___.b * _trickle((val/20 + t/2));
+      y += ___.e * _noise1(val + t/3);
+      y /= 10.5;
       y *= _const.yscale;
       y -= 0.006;
       _mesh[i] = [ x, y ];
@@ -205,7 +193,7 @@ var Wave = function (id) {
   }
   function _noise1 (x) {
     var plus = x < 0 ? -x/10 : 0;
-    return plus + -a[1] * Math.cos(2*x) - a[3] * Math.cos(3*x);
+    return plus  - a[1] * Math.cos(2*x) - a[3] * Math.cos(3*x);
   }
 
   function _ripple (x) {
