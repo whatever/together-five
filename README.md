@@ -2,24 +2,25 @@
 
 NodeJS Application
 
-* Contains mockups for 2D and 3D Together Fest logos
+* Contains mockups for 2D Together Fest Logo
 * Ready for deployment on Nodejitsu
 * Is code worth anything in javascript?
 
-# Pages
+## Manifest
 
-The following pages are 
+Only 2 files are needed to be added to a webpage:
+* `TogetherLogo.png`, an image file that serves as the background and failure fallback
+* `TogetherLogo.min.js`, javascript file coding in `CANVAS`
 
-* `/2D`: 2D together festival graphic with oscillator scope
-* `/2D-ipsum`: Lorem ipsum text over 2D graphic
-* `/3D`: 3D together festival graphic (webgl)
-* `/3D-ipsum`: Lorem ipsum text over 3D graphic
-* `/001`: Same as `3D-ipsum`
-* `/002`: Same as `2D-ipsum`
-
-# How to install
+## How to install
 
 * Clone repository
 * Write `package.json` file
 * `npm install`
-* `foreman start`
+* `node app.js`
+
+# License
+
+This is property of Together Festival, but is shared academically.
+
+Is there a vitrine license?
