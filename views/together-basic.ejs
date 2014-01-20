@@ -21,11 +21,6 @@ I7II777777I??+?=7777$$$$$$$$$$$$$$$$777,77777777$7777777777I?~7777$$$$$$$$$$$$$$
 -->
 <html>
   <head>
-    <title>Together Festival ___ art, technology, music</title>
-    <!-- Debugging, etc.  -->
-    <script src="/public/js/vendor/live.js"       ></script>
-    <script src="/public/js/vendor/dat.gui.min.js"></script>
-    <script src="/public/js/custom/Wave.js"       ></script>
 
     <style>
       body, html {
@@ -43,17 +38,6 @@ I7II777777I??+?=7777$$$$$$$$$$$$$$$$777,77777777$7777777777I?~7777$$$$$$$$$$$$$$
         letter-spacing: .1em;
         line-height: 1.3em;
       }
-      #content {
-        width: 90%;
-        margin: 0 10%;
-        opacity: .9;
-      }
-      #content section {
-        width: 50%;
-        margin: 0 auto;
-        background-color: rgba(0, 0, 0, .8);
-        padding: .2em .8em;
-      }
       #container {
         margin: 0 auto;
         padding: 0;
@@ -64,55 +48,19 @@ I7II777777I??+?=7777$$$$$$$$$$$$$$$$777,77777777$7777777777I?~7777$$$$$$$$$$$$$$
         left: 10px;
         z-index: -999;
       }
-      #wavethanks {
-        background-color: rgba(0, 0, 0, .2);
-        padding: 10px;
-      }
-      #pleasefeeldeepthanks {
-        background-color: white;
-        background-color: black;
-        position: relative;
-        margindth: 500px;: 0 auto;
-        /* opacity: .3; */
-      }
-      .overlay {
-        height: 100%;
-        position: absolute;
-        top: 30%;
-        left: 0;
-        color: black;
-        width: 80%;
-        text-align: center;
-      }
     </style>
   </head>
   <body>
-    <!-- Canvas -->
     <div id="container">
-      <canvas width="500" height="500" id="pleasefeeldeepthanks">WebGL is unsupported.</canvas>
+      <canvas width="900" height="900" id="pleasefeeldeepthanks">
+        <img src="/public/TogetherLogo.png" height="900" width="900">
+      </canvas>
+      <script src="/public/js/custom/TogetherLogo.js"       ></script>
+      <script type="text/javascript">
+          var logo = TogetherLogo('pleasefeeldeepthanks');
+          logo.set({ bg : '/public/TogetherLogo.png' });
+          logo.loop();
+      </script>
     </div>
-
-    <script type="text/javascript">
-      function main() {
-        var canvas = document.getElementById("pleasefeeldeepthanks");
-        var svvim = Wave('pleasefeeldeepthanks');
-        svvim.loop();
-      }
-      window.onload = main;
-    </script>
-    <!-- <img src="/public/BKGD.png"> -->
-    <br> <br> <br> <br> <br>
-    <br> <br> <br> <br> <br>
-    <br> <br> <br> <br> <br>
-    <br> <br> <br> <br> <br>
-    <br> <br> <br> <br> <br>
-    <br> <br> <br> <br> <br>
-    <br> <br> <br> <br> <br>
-    <br> <br> <br> <br> <br>
-    <br> <br> <br> <br> <br>
-    <br> <br> <br> <br> <br>
-    <br> <br> <br> <br> <br>
-    <br> <br> <br> <br> <br>
-    <div>&nbsp;</div>
   </body>
 </html>

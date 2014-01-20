@@ -1,54 +1,17 @@
-var express = require("express");
+var express = require('express');
 var app     = express();
-var http    = require("http");
+var http    = require('http');
 var server  = http.createServer(app).listen(process.env.PORT || 5000);
 
 app.use(express.bodyParser());
-app.use('/public', express.static(__dirname + '/public'));
-app.use('/public/css', express.static(__dirname + '/public/css'));
-app.use('/public/js', express.static(__dirname + '/public/js'));
-app.use('/public/img', express.static(__dirname + '/public/img'));
+
+app.use('/public',      express.static(__dirname + '/public'));
+app.use('/public/css',  express.static(__dirname + '/public/css'));
+app.use('/public/js',   express.static(__dirname + '/public/js'));
+app.use('/public/img',  express.static(__dirname + '/public/img'));
 
 app.use(express.favicon(__dirname + '/public/favicon.ico', { maxAge: 2592000000 }))
 
-app.get("/", function (req, resp) {
-  resp.render("2D.ejs");
-});
-
-app.get("/001", function (req, resp) {
-  resp.render("3D-ipsum.ejs");
-});
-
-app.get("/002", function (req, resp) {
-  resp.render("2D-ipsum.ejs");
-});
-
-app.get("/2D", function (req, resp) {
-  resp.render("2D.ejs");
-});
-
-app.get("/2D-ipsum", function (req, resp) {
-  resp.render("2D-ipsum.ejs");
-});
-
-app.get("/3D", function (req, resp) {
-  resp.render("3D.ejs");
-});
-
-app.get("/3D-ipsum", function (req, resp) {
-  resp.render("3D-ipsum.ejs");
-});
-
-app.get('/humans.txt', function (req, resp) {
-  fs.readFile("public/humans.txt", "utf-8", function (err, data) {
-    resp.set('Content-Type', 'text/plain');
-    resp.send(data);
-  });
-});
-
-app.get('/robots.txt', function (req, resp) {
-  fs.readFile("public/robots.txt", "utf-8", function (err, data) {
-    resp.set('Content-Type', 'text/plain');
-    resp.send(data);
-  });
+app.get('/', function (req, resp) {
+  resp.render('together-basic.ejs');
 });

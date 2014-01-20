@@ -1,228 +1,205 @@
-/* global webgl : false */
-/* exported TogetherLogo */
+/* exported getElapsedSeconds, TogetherLogo  */
+var getElapsedSeconds = (function () {
+  'use strict';
+  var $_$ = +new Date();
+  return function () { return (new Date() - $_$)/1000; };
+})();
 
 /**
- *
- * @param {float[3]} _pos [ x, y, z ] coordinates of the center
- * @param {float[3]} _dim [ w, h, d ] size of the plane
- * @param {object} _opts miscelaneous options - color
+ * Get Mouse Position from Event (Cross-Browser)
  */
-var TogetherLogo = function (_pos, _dim, _opts) {
-  // Together Logo
-  var _texture = gl.createTexture();
-  var _imgLoaded = false;
+var getMousePosition = (function() {
+  'use strict';
+  if (window.pageXOffset !== undefined) {
+    return function (ev) {
+      return [ev.clientX+window.pageXOffset, ev.clientY+window.pageYOffset];
+    };
+  }
+  else {
+    return function () {
+      var ev = window.event,
+      d = document.documentElement, b= document.body;
+      return [ev.clientX+d.scrollLeft+ b.scrollLeft, ev.clientY+d.scrollTop+ b.scrollTop];
+    };
+  }
+})();
+
+var TogetherLogo = function (id) {
+  'use strict';
+  var _const = { freq : 14 - 1.1387, shift : 2 + 1.64166, yscale : 0.7 };
+  var _x = { freq : 0.0001, shift: 0.0001 };
+  var _canvas;
+
+  if (id === undefined) {
+    _canvas = document.createElement('CANVAS');
+  }
+  else if (typeof id === 'string') {
+    _canvas = document.getElementById(id);
+  }
+  else {
+    _canvas = id;
+  }
+
+  var _c = _canvas.getContext('2d');
   var _img = new Image();
-  _img.onload = function () {
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
-    gl.bindTexture(gl.TEXTURE_2D, _texture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, _img);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
-    gl.generateMipmap(gl.TEXTURE_2D);
-    gl.bindTexture(gl.TEXTURE_2D, null);
-    _imgLoaded = true;
-  };
-  _img.src = '/public/img/together_logo.png';
 
+  var ___ = { a : 1.0, b : 1.0, c : 1.0, e : 0.0 };
 
-  _opts = _opts || {};
-  _opts.color = _opts.color !== undefined ? _opts.color : [ 1, 1, 1, 1 ];
-  var _plane = {
-    x : _pos[0] ? _pos[0] : 0,
-    y : _pos[1] ? _pos[1] : 0,
-    z : _pos[2] ? _pos[2] : 0,
-    w : _dim[0] ? _dim[0] : 0,
-    h : _dim[1] ? _dim[1] : 0,
-    d : _dim[2] ? _dim[2] : 0
-  };
-  var _grid = {
-    tiles : 0
-  };
-  var _vbo = {
-    pbuffer : gl.createBuffer(),
-    cbuffer : gl.createBuffer(),
-    nbuffer : gl.createBuffer(),
-    tbuffer : gl.createBuffer(),
-    ibuffer : gl.createBuffer(),
-    positions : [],
-    colors : [],
-    normals : [],
-    textureCoords: [],
-    indices : []
-  };
+  var a = [
+    +0.00000000, +1.14270000, +0.45296000, +0.17753000, -0.02593500,
+    -0.10291000, -0.07243600, -0.00105080, +0.04607100, +0.04281500,
+    +0.00682870, -0.02524500, -0.02924900, -0.00849660, +0.01496500,
+    +0.02147800, +0.00887470, -0.00902450, -0.01640690, -0.00873870,
+    +0.00524910, +0.01280000, +0.00836650, -0.00269900, -0.01008200
+  ];
 
-  _init();
+  var _mesh = [ ];
+  var _xmin = -1.00, _xmax = 1.0, _xsize = 90;
+  var dx = (_xmax - _xmin)/(_xsize-1);
 
+  for (var i = 0; i < _xsize; i++) {
+    var x = dx * i + _xmin;
+    var y = 0;
+    _mesh.push([ x, y ]);
+  }
+
+  window.onmousemove = (function () {
+    var last = { x : undefined, y : undefined };
+    return function (ev) {
+      var xy = getMousePosition(ev);
+      var dx = 0, dy = 0;
+      if (typeof last.x === 'number') {
+        dx = Math.abs(xy[0] - last.x)/3;
+      }
+      if (typeof last.y === 'number') {
+        dy = Math.abs(xy[1] - last.y)/3;
+      }
+      var d = Math.sqrt(dx*dx + dy*dy) * 40;
+      last.x = xy[0];
+      last.y = xy[1];
+      _set({ a : 0, b : (0.7*dy + 0.3*dx), c : d*(dx + dy), e : dx });
+    };
+
+    // Immediately begin loop
+  })();
+
+  _loop();
   return {
-    _about : 'Together 5 Logo',
-    update : _update,
-    draw : _draw
+    set     : _set,
+    loop    : _loop,
+    update  : _update,
+    draw    : _draw
   };
-
-  function _init() {
-    var positions = [], normals = [], colors = [], indices = [], texCoords = [];
-    // a        b
-    //   * - -*
-    //   |  / |
-    //   | /  |
-    //   * - -*
-    // d        c
-    _plane.z = 0;
-    var w = _dim[0]/2.0;
-    var h = _dim[2]/2.0;
-    var a = [ _pos[0] - w, _pos[1], _pos[2] - h ];
-    var b = [ _pos[0] + w, _pos[1], _pos[2] - h ];
-    var c = [ _pos[0] + w, _pos[1], _pos[2] + h ];
-    var d = [ _pos[0] - w, _pos[1], _pos[2] + h ];
-    // @@@
-    // @@@ assign positions
-    // 1-3-4
-    positions = [];
-    positions.push(a[0]);
-    positions.push(a[1]);
-    positions.push(a[2]);
-    positions.push(c[0]);
-    positions.push(c[1]);
-    positions.push(c[2]);
-    positions.push(d[0]);
-    positions.push(d[1]);
-    positions.push(d[2]);
-    // 1-3-2
-    positions.push(a[0]);
-    positions.push(a[1]);
-    positions.push(a[2]);
-    positions.push(c[0]);
-    positions.push(c[1]);
-    positions.push(c[2]);
-    positions.push(b[0]);
-    positions.push(b[1]);
-    positions.push(b[2]);
-    // @@@ assign colors
-    for (var i = 0; i < 6; i++) {
-      colors.push(_opts.color[0]);
-      colors.push(_opts.color[1]);
-      colors.push(_opts.color[2]);
-      colors.push(_opts.color[3]);
-    }
-
-    // @@@ assign normals
-    normals = [
-      // 1-3-2
-      1, 1, 1,
-      1, 1, 1,
-      1, 1, 1,
-      // 1-3-4
-      1, 1, 1,
-      1, 1, 1,
-      1, 1, 1
-    ];
-
-    texCoords = [
-      // 1-3-4
-      0.0, 0.0,
-      1.0, 1.0,
-      0.0, 1.0,
-      // 1-3-2
-      0.0, 0.0,
-      1.0, 1.0,
-      1.0, 0.0
-    ];
-
-    _grid.tiles = 2;
-    _vbo.positions = positions;
-    _vbo.colors = positions;
-    _vbo.normals = normals;
-    _vbo.texCoords = texCoords;
-    
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, _vbo.pbuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, _vbo.cbuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, _vbo.nbuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, _vbo.tbuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texCoords), gl.STATIC_DRAW);
-
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, _vbo.ibuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, null);
-  }
-
-  function _update() {
-  }
-
-  function _draw(shader) {
-    if (!_imgLoaded) {
+  /**
+   *    --======*==-
+   *  --======*==-
+   *    --======*==-
+   *  --======*==-
+   */
+  function _set (vals) {
+    if (vals === undefined) {
       return;
     }
+    if (typeof vals.a === 'number' && vals.a) {
+      ___.a += vals.a;
+    }
+    if (typeof vals.b === 'number' && vals.b) {
+      ___.b += vals.b;
+    }
+    if (typeof vals.c === 'number' && vals.c) {
+      ___.c += 0.001;
+    }
+    if (typeof vals.e === 'number') {
+      ___.e = 1.0;
+    }
+    if (typeof vals.bg === 'string') {
+      _img = new Image();
+      _img.src = vals.bg;
+    }
+  }
+  function _loop () {
+    requestAnimationFrame(_loop);
+    _canvas.width = _canvas.width;
+    _update();
+    _draw();
+  }
+  /**
+   *
+   */
+  function _update () {
+    for (var i = 0; i < _mesh.length; i++) {
+      var x = _mesh[i][0];
+      var y = 0.0;
+      var t = getElapsedSeconds();
 
-    webgl.pushModelView();
-    webgl.perspectiveMatrix({ fieldOfView : 45, aspectRatio : 1, nearPlane : 0.1, farPlane : 100 });
-    gl.useProgram(shader);
+      var xfreq = _x.freq + _const.freq;
+      var xshift = _x.shift + _const.shift;
+      var val = xfreq * (x + 1.25) + xshift;
+      y += ___.a * _circleWave(val);
+      y += ___.b * _trickle((val/20 + t/2));
+      y += ___.e * _noise1(val + t/3);
+      y /= 10.5;
+      y *= _const.yscale;
+      y -= 0.006;
+      _mesh[i] = [ x, y ];
+    }
 
-    var normalMatrix = mat3.create();
-    mat4.toInverseMat3(webgl.mvMatrix, normalMatrix);
-    mat3.transpose(normalMatrix);
+    // Controls!
+    ___.a = ((___.a - 1) / 1.1) + 1;
+    ___.b = ((___.b - 1) / 1.1) + 1;
+    ___.c = ((___.c - 1) / 1.1) + 1;
+    ___.e /= 1.030;
+  }
 
-    var aPosition = gl.getAttribLocation(shader, 'aPosition');
-    var aColor    = gl.getAttribLocation(shader, 'aColor');
-    var aNormal   = gl.getAttribLocation(shader, 'aNormal');
-    var aTexCoord = gl.getAttribLocation(shader, 'aTexCoord');
-    gl.enableVertexAttribArray(aPosition);
-    gl.enableVertexAttribArray(aColor);
-    gl.enableVertexAttribArray(aNormal);
-    gl.enableVertexAttribArray(aTexCoord);
+  function _draw () {
+    var a = _canvas.width/2;
+    var b = _canvas.height/2;
+    _c.lineWidth   = '0.010';
+    _c.transform(+a, +0, +0, +b, +a, +b);
+    if (_img.height !== 0) {
+      _c.drawImage(_img, -1, -1, 2, 2);
+    }
 
-    var uMVMatrix = gl.getUniformLocation(shader, 'uMVMatrix');
-    var uPMatrix  = gl.getUniformLocation(shader, 'uPMatrix');
-    var uNMatrix  = gl.getUniformLocation(shader, 'uNMatrix');
+    var faded = 'rgba(020, 020, 20, 0)';
+    var dark  = 'rgba(100, 200, 0, .7)';
 
-    var uLightDir       = gl.getUniformLocation(shader, 'uLightDir');
-    var uAmbientCol     = gl.getUniformLocation(shader, 'uAmbientCol');
-    var uDirectionalCol = gl.getUniformLocation(shader, 'uDirectionalCol');
-    var uSamplerTexture = gl.getUniformLocation(shader, 'uSamplerTexture');
+    _c.transform(1, 0, 0, -1, 0, 0);
+    var g = _c.createLinearGradient(-1, 0, 1, 0);
+    g.addColorStop(0.0, faded);
+    g.addColorStop(0.3, dark);
+    g.addColorStop(0.6, dark);
+    g.addColorStop(1.0, faded);
 
-    // Set camera matrices
-    gl.uniformMatrix4fv(uPMatrix,  false, webgl.pMatrix);
-    gl.uniformMatrix4fv(uMVMatrix, false, webgl.mvMatrix);
-    gl.uniformMatrix3fv(uNMatrix,  false, normalMatrix);
+    // <--
+    _c.beginPath();
+    _c.strokeStyle = g;
+    // _c.strokeStyle = 'white';
+    var p = [ _mesh[0][0], _mesh[0][1] ];
+    _c.moveTo(p[0], p[1]);
+    for (var i = 1; i < _mesh.length; i++) {
+      p = [ _mesh[i][0], _mesh[i][1] ];
+      _c.lineTo(p[0], p[1]);
+    }
+    _c.stroke();
+    // --->
+  }
 
-    // Lighting Vectors
-    var lightDir = vec3.normalize([ 0, 0, 1 ]);
-    gl.uniform3fv(uLightDir, lightDir);
-    gl.uniform3f(uAmbientCol, 0.25, 0.25, 0.25);
-    gl.uniform3f(uDirectionalCol, 1, 1, 1);
+  function _circleWave (x) {
+    x += 1;
+    var sgn = 1.0;
+    if (x % 4 < 2.0) {
+      sgn = -1;
+    }
+    x %= 2;
+    x -= 1;
+    return sgn * Math.sqrt(1 - x * x);
+  }
+  function _noise1 (x) {
+    var plus = x < 0 ? -x/10 : 0;
+    return plus  - a[1] * Math.cos(2*x) - a[3] * Math.cos(3*x);
+  }
 
-    // Specify position attribute
-    gl.bindBuffer(gl.ARRAY_BUFFER, _vbo.pbuffer);
-    gl.vertexAttribPointer(aPosition, 3, gl.FLOAT, false, 0, 0);
-
-    // Specify color attribute
-    gl.bindBuffer(gl.ARRAY_BUFFER, _vbo.cbuffer);
-    gl.vertexAttribPointer(aColor, 4, gl.FLOAT, false, 0, 0);
-
-    // Specify normal attribute
-    gl.bindBuffer(gl.ARRAY_BUFFER, _vbo.nbuffer);
-    gl.vertexAttribPointer(aNormal, 3, gl.FLOAT, false, 0, 0);
-
-    // Specify texCoord attribute
-    gl.bindBuffer(gl.ARRAY_BUFFER, _vbo.tbuffer);
-    gl.vertexAttribPointer(aTexCoord, 2, gl.FLOAT, false, 0, 0);
-
-    // Attach texture
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, _texture);
-    gl.uniform1i(uSamplerTexture, 0);
-
-    // Draw as an array (unindexed)
-    gl.drawArrays(gl.TRIANGLES, 0, 3*_grid.tiles);
-
-    // ...
-    webgl.popModelView();
+  function _trickle (x) {
+    return 0.02 * Math.cos(30 * x) + 0.02 * Math.sin(7*x)+ 0.02 * Math.sin(5*x);
   }
 };
