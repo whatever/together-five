@@ -138,9 +138,11 @@ var TogetherLogo = function (id) {
       y += ___.a * _circleWave(val);
       y += ___.b * _trickle((val/20 + t/2));
       y += ___.e * _noise1(val + t/3);
-      y /= 10.5;
+      y /= 3.3;
       y *= _const.yscale;
-      y -= 0.006;
+      y -= 0.029;
+      if ( y > 0.9) y = 0.9;
+      if ( y < -0.9) y = -0.9;
       _mesh[i] = [ x, y ];
     }
 
@@ -154,7 +156,7 @@ var TogetherLogo = function (id) {
   function _draw () {
     var a = _canvas.width/2;
     var b = _canvas.height/2;
-    _c.lineWidth   = '0.010';
+    _c.lineWidth   = '0.026';
     _c.transform(+a, +0, +0, +b, +a, +b);
     if (_img.height !== 0) {
       _c.drawImage(_img, -1, -1, 2, 2);
@@ -166,8 +168,8 @@ var TogetherLogo = function (id) {
     _c.transform(1, 0, 0, -1, 0, 0);
     var g = _c.createLinearGradient(-1, 0, 1, 0);
     g.addColorStop(0.0, faded);
-    g.addColorStop(0.3, dark);
-    g.addColorStop(0.6, dark);
+    g.addColorStop(0.1, dark);
+    g.addColorStop(0.9, dark);
     g.addColorStop(1.0, faded);
 
     // <--
@@ -185,6 +187,7 @@ var TogetherLogo = function (id) {
   }
 
   function _circleWave (x) {
+    x = +.21 + x/1.245;
     x += 1;
     var sgn = 1.0;
     if (x % 4 < 2.0) {
